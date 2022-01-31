@@ -64,12 +64,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     <audio id="local_webrtc" autoplay></audio>
   </div>
   <script>
-    window.addDemoButtons = demoNames => {
+    window.addDemoButtons = (demoNames, startByDefault=0) => {
       let names = demoNames.split(',').map(item => item.trim());
       let header = document.getElementById("header");
       for (let n = 0; n < names.length; n++) {
         let flag = 'demo' + names[n] + 'State';
-        window[flag] = 0;
+        window[flag] = startByDefault;
         if (names[n] != "Speak") {
           header.innerHTML += '<button onclick=window.' + flag + '++;window.syncDemos();>' + names[n] + '</button>';
         }

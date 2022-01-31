@@ -420,6 +420,7 @@ let uvToNormal = (u,v,P,func) => {
 }
 
 let uvToTorus = (u,v,r) => {
+  // console.log("torussssssss");
    let theta = 2 * Math.PI * u;
    let phi   = 2 * Math.PI * v;
 
@@ -810,7 +811,7 @@ function Blobs() {
    uvToForm = (u,v,data) => {
       let uvToP = (u,v) => {
          if (data.form == 'donut') {
-            let R = data.info ? data.info : .37;
+            let R = data.info ? data.info : .1;
             let theta = 2 * Math.PI * u,
                 phi = 2 * Math.PI * v;
             return [ Math.cos(theta) * (1-R + Math.cos(phi) * R),
@@ -2791,140 +2792,217 @@ for (let s = 3 ; s < 100 ; s *= 2)
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 
-function Node(_form) {
-   let id = uniqueID(),
-       m = new Matrix(),
-       form = _form,
-       previousTime,
-  rm;
+function Node(_form)
+{
+    let id = uniqueID(),
+        m = new Matrix(),
+        form = _form,
+        previousTime,
+        rm;
 
-   this.clear = () => {
-      previousTime = 0;
-      rm = matrix_identity;
-      this._bevel    = false;
-      this._blend    = false;
-      this._blur     = .5;
-      this._children = [];
-      this._color    = [1,1,1];
-      this._info     = '';
-      this._melt     = false;
-      this._parent   = null;
-      this._texture  = '';
-      this._precision = 1;
- m.identity();
- this._controlActions = {};
- implicitSurface.remesh();
- return this;
-   }
+    this.clear = () =>
+    {
+        previousTime = 0;
+        rm = matrix_identity;
+        this._bevel = false;
+        this._blend = false;
+        this._blur = .5;
+        this._children = [];
+        this._color = [1, 1, 1];
+        this._info = '';
+        this._melt = false;
+        this._parent = null;
+        this._texture = '';
+        this._precision = 1;
+        m.identity();
+        this._controlActions = {};
+        implicitSurface.remesh();
+        return this;
+    }
 
-   this.clear();
+    this.clear();
 
-   this.child = i => this._children[i];
+    this.child = i => this._children[i];
 
-   this.prop = name => this[name] != null ? this[name] : this._parent.prop(name);
+    this.prop = name => this[name] != null ? this[name] : this._parent.prop(name);
 
-   this._controlActions = {};
+    this._controlActions = {};
 
-   this._doControlAction = ch => {
-      if (this._controlActions[ch] && justPressed) {
-         this._controlActions[ch].func();
-      }
-   }
+    this._doControlAction = ch =>
+    {
+        if (this._controlActions[ch] && justPressed)
+        {
+            this._controlActions[ch].func();
+        }
+    }
 
-   this.control = (ch, label, func) => this._controlActions[ch] = { label: label, func: func };
+    this.control = (ch, label, func) => this._controlActions[ch] = {
+        label: label,
+        func: func
+    };
 
-   this.add = (form) => {
-      let child = new Node(form);
-      this._children.push(child);
-      child._bevel  = null;
-      child._blend  = null;
-      child._blur   = null;
-      child._color  = null;
-      child._info   = null;
-      child._melt   = null;
-      child._parent = this;
-      child._precision = null;
-      return child;
-   }
-   this.remove = arg => { // ARG CAN BE EITHER AN INDEX OR A CHILD NODE
-      let i = arg;
-      if (! Number.isInteger(i))
-         for (i = 0 ; i < this._children.length ; i++)
-            if (arg == this._children[i])
-          break;
-      if (i >= 0 && i < this._children.length)
-    this._children.splice(i, 1);
-      return this;
-   }
-      this.animate  = func    => { this._animate = func; return this; }
-      this.identity = ()      => { m.identity();         return this; }
-      this.move     = (x,y,z) => { m.translate(x,y,z);   return this; }
-      this.turnX    = theta   => { m.rotateX(theta);     return this; }
-      this.turnY    = theta   => { m.rotateY(theta);     return this; }
-      this.turnZ    = theta   => { m.rotateZ(theta);     return this; }
-      this.scale    = (x,y,z) => { m.scale(x,y,z);       return this; }
-      this.color    = (r,g,b) => { this._color = typeof r === 'string' ||
-                                                 Array.isArray(r) ? r : [r,g,b]; return this; }
-      this.blur     = value   => { this._blur = value;   return this; }
-      this.info     = value   => { if (this.prop('_blend') && this._info != value) activeSet(true);
-                                   this._info = value;   return this; }
-      this.texture  = src     => { this._texture = src;  return this; }
-      this.bevel    = tf      => { this._bevel = tf === undefined ? true : tf; return this; }
-      this.blend    = tf      => { if (this._blend != tf) activeSet(true);
-                                   this._blend = tf === undefined ? false : tf; return this; }
-      this.melt     = tf      => { this._melt  = tf === undefined ? true : tf; return this; }
-      this.precision = value   => { this._precision = value; return this; }
-      this.render = pm => {
-         // if (this == model) {
-         //    let s = '<font color=white face=helvetica><small><small><small><p>';
-         //    s += '<b><big>' + modelData[modelId].name + '</big></b><p>';
-         //         for (let ch in this._controlActions)
-         //            s += '<font face=courier><b>CTRL-' + ch.toLowerCase() + '</b></font> ' +
-         //            this._controlActions[ch].label + '<br>';
-         //       //   html.inactiveCode.innerHTML = s;
-         // }
-         implicitSurface.setPrecision(this.prop('_precision'));
-         let color = this.prop('_color');
-         if (Array.isArray(color)) {
+    this.add = (form) =>
+    {
+        let child = new Node(form);
+        this._children.push(child);
+        child._bevel = null;
+        child._blend = null;
+        child._blur = null;
+        child._color = null;
+        child._info = null;
+        child._melt = null;
+        child._parent = this;
+        child._precision = null;
+        return child;
+    }
+    this.remove = arg =>
+    { // ARG CAN BE EITHER AN INDEX OR A CHILD NODE
+        let i = arg;
+        if (!Number.isInteger(i))
+            for (i = 0; i < this._children.length; i++)
+                if (arg == this._children[i])
+                    break;
+        if (i >= 0 && i < this._children.length)
+            this._children.splice(i, 1);
+        return this;
+    }
+    this.animate = func =>
+    {
+        this._animate = func;
+        return this;
+    }
+    this.identity = () =>
+    {
+        m.identity();
+        return this;
+    }
+    this.move = (x, y, z) =>
+    {
+        m.translate(x, y, z);
+        return this;
+    }
+    this.turnX = theta =>
+    {
+        m.rotateX(theta);
+        return this;
+    }
+    this.turnY = theta =>
+    {
+        m.rotateY(theta);
+        return this;
+    }
+    this.turnZ = theta =>
+    {
+        m.rotateZ(theta);
+        return this;
+    }
+    this.scale = (x, y, z) =>
+    {
+        m.scale(x, y, z);
+        return this;
+    }
+    this.color = (r, g, b) =>
+    {
+        this._color = typeof r === 'string' ||
+            Array.isArray(r) ? r : [r, g, b];
+        return this;
+    }
+    this.blur = value =>
+    {
+        this._blur = value;
+        return this;
+    }
+    this.info = value =>
+    {
+        if (this.prop('_blend') && this._info != value) activeSet(true);
+        this._info = value;
+        return this;
+    }
+    this.texture = src =>
+    {
+        this._texture = src;
+        return this;
+    }
+    this.bevel = tf =>
+    {
+        this._bevel = tf === undefined ? true : tf;
+        return this;
+    }
+    this.blend = tf =>
+    {
+        if (this._blend != tf) activeSet(true);
+        this._blend = tf === undefined ? false : tf;
+        return this;
+    }
+    this.melt = tf =>
+    {
+        this._melt = tf === undefined ? true : tf;
+        return this;
+    }
+    this.precision = value =>
+    {
+        this._precision = value;
+        return this;
+    }
+    this.render = pm =>
+    {
+        // if (this == model) {
+        //    let s = '<font color=white face=helvetica><small><small><small><p>';
+        //    s += '<b><big>' + modelData[modelId].name + '</big></b><p>';
+        //         for (let ch in this._controlActions)
+        //            s += '<font face=courier><b>CTRL-' + ch.toLowerCase() + '</b></font> ' +
+        //            this._controlActions[ch].label + '<br>';
+        //       //   html.inactiveCode.innerHTML = s;
+        // }
+        implicitSurface.setPrecision(this.prop('_precision'));
+        let color = this.prop('_color');
+        if (Array.isArray(color))
+        {
             let materialName = '' + id;
-            let r = color[0], g = color[1], b = color[2];
-            materials[materialName] = { ambient : [.2*r ,.2*g ,.2*b ],
-                                        diffuse : [.8*r ,.8*g ,.8*b ],
-                                        specular: [.9,.9,.9,20] };
+            let r = color[0],
+                g = color[1],
+                b = color[2];
+            materials[materialName] = {
+                ambient: [.2 * r, .2 * g, .2 * b],
+                diffuse: [.8 * r, .8 * g, .8 * b],
+                specular: [.9, .9, .9, 20]
+            };
             color = materialName;
-         }
-         if (this._animate) {
+        }
+        if (this._animate)
+        {
             this.time = Date.now() / 1000 - startTime;
-            this.elapsed = previousTime ? this.time - previousTime : 1/30;
+            this.elapsed = previousTime ? this.time - previousTime : 1 / 30;
             if (this.prop('_melt'))
-               activeSet(true);
+                activeSet(true);
             this._animate(this);
             previousTime = this.time;
-         }
-         rm = matrix_multiply(pm, m.getValue());
-         if (form == 'root')
+        }
+        rm = matrix_multiply(pm, m.getValue());
+        if (form == 'root')
             S = [];
-         else if (form) {
+        else if (form)
+        {
             let s = {
-               blur: this.prop('_blur'),
-               color: color,
-               id: id,
-               info: this.prop('_info'),
-               isBlobby: this.prop('_blend'),
-               isColored: true,
-               rounded: this.prop('_bevel'),
-               sign: 1,
-               symmetry: 0,
-               texture: this.prop('_texture'),
-               form: form,
-               M: matrix_multiply(vmi, rm)
+                blur: this.prop('_blur'),
+                color: color,
+                id: id,
+                info: this.prop('_info'),
+                isBlobby: this.prop('_blend'),
+                isColored: true,
+                rounded: this.prop('_bevel'),
+                sign: 1,
+                symmetry: 0,
+                texture: this.prop('_texture'),
+                form: form,
+                M: matrix_multiply(vmi, rm)
             };
             computeQuadric(s);
             S.push(s);
-         }
-         for (let i = 0 ; i < this._children.length ; i++)
+        }
+        for (let i = 0; i < this._children.length; i++)
             this._children[i].render(rm);
-      }
+    }
    }
 
 // EXPOSE A ROOT NODE FOR EXTERNAL MODELING.
