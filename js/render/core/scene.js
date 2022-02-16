@@ -27,6 +27,8 @@ import { Ray } from "../math/ray.js";
 import { getViews } from "./controllerInput.js";
 // import { corelink_event } from "../../util/corelink_sender.js";
 
+export let active_session = null;
+
 export class WebXRView extends RenderView {
   constructor(view, layer) {
     super(
@@ -238,6 +240,7 @@ export class Scene extends Node {
 
     let gl = this._renderer.gl;
     let session = xrFrame.session;
+    active_session = session;
     // Assumed to be a XRWebGLLayer for now.
     let layer = session.renderState.baseLayer;
 

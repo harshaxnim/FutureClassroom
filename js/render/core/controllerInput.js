@@ -7,9 +7,10 @@ window.isPressed = false;
 window.isDragged = false;
 window.isReleased = true;
 
-export let controllerMatrix = { left: [], right: [] };
+export let controllerMatrix = { left: [], right: [], head: [] };
 export let buttonState = { left: [], right: [] };
 export let joyStickState = { left: {x: 0, y: 0}, right: {x: 0, y: 0} };
+export let states = {};
 
 for (let i = 0; i < buttonNum; i++) 
   buttonState.left[i] = buttonState.right[i] = {pressed: false, touched: false, value: 0};
@@ -33,6 +34,10 @@ export let updateController = (avatar, buttonInfo) => {
       joyStickState[h] = {x: a[2], y: a[3]};
     }
   }
+  
+  states.left = avatar.leftController;
+  states.right = avatar.rightController;
+  states.head = avatar.headset;
 };
 
 export let onPress = (hand, button) => {

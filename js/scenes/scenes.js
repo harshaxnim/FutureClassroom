@@ -10,11 +10,12 @@ export default () => {
    return {
       enableSceneReloading: true,
       scenes: [
-         { name: "DemoCube"   , path: "./demoCube.js"    },
-         { name: "Demo4D"     , path: "./demo4D.js"      },
-         { name: "DemoHitRect", path: "./demoHitRect.js" },
-         { name: "DemoDots"   , path: "./demoDots.js"    },
-         { name: "DemoBlobs"  , path: "./demoBlobs.js"   },
+         // { name: "DemoCube"     , path: "./demoCube.js"    },
+         // { name: "Demo4D"       , path: "./demo4D.js"      },
+         { name: "DemoHitRect"  , path: "./demoHitRect.js" },
+         // { name: "DemoDots"     , path: "./demoDots.js"    },
+         // { name: "DemoBlobs"    , path: "./demoBlobs.js"   },
+         { name: "DemoAnimate"  , path: "./demoAnimate.js"   },
       ]
    };
 }
